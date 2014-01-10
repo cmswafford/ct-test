@@ -15,7 +15,7 @@
 /log/*.log
 /tmp
 
-/config/initializers/secret_token.rb
+/config/initializers/*
 
 *.swp
 *.lock
