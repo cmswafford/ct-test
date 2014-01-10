@@ -11,3 +11,7 @@
  *= require_self
  *= require_tree .
  */
+
+nav ul {
+	padding: 0;
+}

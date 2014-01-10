@@ -28,7 +28,7 @@ class UsersController < ApplicationController
 	private
 	def connect_to_twitter
 		@client = Twitter::REST::Client.new do |config|
-			# Using rails 4.0.2 - set my twitter credentials in /config/initializers/secret_token.rb
+			# Credentials in /config/initializers/secret_token.rb
 			config.consumer_key        = Rails.configuration.twitter_consumer_key
 			config.consumer_secret     = Rails.configuration.twitter_consumer_secret
 			config.access_token        = Rails.configuration.twitter_access_token
