@@ -1,0 +1,26 @@
+<% if params[:screen_names].blank? %>
+<form method="get" action="/users/intersect-friends">
+	<div>
+		<p>
+			<label for="screen_name_0">First Screen Name:</label>
+			<input name="screen_names[]" id="screen_name_0"/>
+		</p>
+		<p>
+			<label for="screen_name_1">Second Screen Name:</label>
+			<input name="screen_names[]" id="screen_name_1"/>
+		</p>
+		<p>
+		<input type="submit" value="Intersect friends">
+		</p>
+	</div>
+</form>
+<% else %>
+<a href="/users/intersect-friends">← Intersect different users</a>
+<h1>Intersect Friends</h1>
+<h2><%= @screen_names[0] %> and <%= @screen_names[1] %> are both following:</h2>
+<ul>
+<% @friends.each do |friend| %>
+	<li><%= friend %></li>
+<% end %>
+</ul>
+<% end %>
