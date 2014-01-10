@@ -17,5 +17,6 @@
 
 /config/initializers/*
 
+.*.swp
 *.swp
 *.lock
