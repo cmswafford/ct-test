@@ -10,7 +10,7 @@ class UsersController < ApplicationController
 	def recent_tweets
 		# id == 0 used to display the input form
 		unless params[:id] == "0"
-      screen_name = params[:id]
+			screen_name = params[:id]
 			@tweets = get_recent_tweets(screen_name)
 			@username = screen_name
 		end
@@ -107,7 +107,7 @@ class UsersController < ApplicationController
 		end
 			update_tweets(screen_name)
 
-    # Rate limiting technique from Examples
+		# Rate limiting technique from Examples
 		# https://github.com/sferik/twitter/blob/master/examples/RateLimiting.md
 		max_attempts = 3
 		num_attempts = 0
