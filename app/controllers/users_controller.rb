@@ -109,20 +109,13 @@ class UsersController < ApplicationController
 		else
 			# Rate limiting technique from Examples
 			# https://github.com/sferik/twitter/blob/master/examples/RateLimiting.md
-			max_attempts = 2
+			max_attempts = 3
 			num_attempts = 0
 			begin
 				num_attempts += 1
 				friends_cursor = @client.friends(screen_name, {:cursor => cursor, :count => 5000})
 				hash = friends_cursor.to_hash
-				users = hash[:users]
-				users.each {|u| list << u }
-				logger.debug "Updated List:"
-				logger.debug list
-
-				#screen_names = users.collect.{|u| u[:screen_name]}
-				#list = list + screen_names
-				#hashie.users.each {|u| list << u } # Concat users to list
+				hash[:users].each {|u| list << u[:screen_name] }
 
 				# Recursive step using the next cursor
 				get_twitter_friends_with_cursor(screen_name, hash[:next_cursor], list)
@@ -134,8 +127,7 @@ class UsersController < ApplicationController
 					logger.debug error
 					retry
 				else
-					return list
-					#raise
+					raise
 				end
 			end
 		end
