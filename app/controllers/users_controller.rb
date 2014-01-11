@@ -109,26 +109,33 @@ class UsersController < ApplicationController
 		else
 			# Rate limiting technique from Examples
 			# https://github.com/sferik/twitter/blob/master/examples/RateLimiting.md
-			max_attempts = 3
+			max_attempts = 2
 			num_attempts = 0
 			begin
 				num_attempts += 1
-				hashie = @client.friends(screen_name, :cursor => cursor)
+				friends_cursor = @client.friends(screen_name, {:cursor => cursor, :count => 5000})
+				hash = friends_cursor.to_hash
+				users = hash[:users]
+				users.each {|u| list << u }
+				logger.debug "Updated List:"
+				logger.debug list
+
+				#screen_names = users.collect.{|u| u[:screen_name]}
+				#list = list + screen_names
 				#hashie.users.each {|u| list << u } # Concat users to list
-				batch = hashie.collect{|user| user.screen_name}
-				list = list + batch
 
 				# Recursive step using the next cursor
-				get_twitter_friends_with_cursor(screen_name, hashie.next_cursor, list)
+				get_twitter_friends_with_cursor(screen_name, hash[:next_cursor], list)
 			rescue Twitter::Error::TooManyRequests => error
 				if num_attempts <= max_attempts
 					# NOTE: Your process could go to sleep for up to 15 minutes but if you
 					# retry any sooner, it will almost certainly fail with the same exception.
-						#sleep error.rate_limit.reset_in
-						sleep 60
+					sleep error.rate_limit.reset_in
+					logger.debug error
 					retry
 				else
-					raise
+					return list
+					#raise
 				end
 			end
 		end
