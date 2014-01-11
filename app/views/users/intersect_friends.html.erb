@@ -19,10 +19,14 @@
 <% else %>
 <a href="/users/intersect-friends">← Intersect different users</a>
 <h1>Intersect Friends</h1>
-<h2><%= @screen_names[0] %> and <%= @screen_names[1] %> are both following:</h2>
-<ul>
-<% @friends.each do |friend| %>
-	<li><%= friend %></li>
-<% end %>
-</ul>
+<% if @friends.empty? %>
+	<h2><%= @screen_names[0] %> and <%= @screen_names[1] %> are following disjoint sets.</h2>
+<% else %>
+	<h2><%= @screen_names[0] %> and <%= @screen_names[1] %> are both following <%= @friends.length %> users:</h2>
+	<ul>
+	<% @friends.each do |friend| %>
+		<li><%= friend %></li>
+	<% end %>
+	</ul>
+	<% end %>
 <% end %>

@@ -100,35 +100,46 @@ class UsersController < ApplicationController
 		user.save
 	end
 
+	# Recursively get all friends using a cursor
+	# https://gist.github.com/kent/451413
+	def get_twitter_friends_with_cursor(screen_name, cursor, list)
+		# Base case
+		if cursor == 0
+			return list
+		else
+			# Rate limiting technique from Examples
+			# https://github.com/sferik/twitter/blob/master/examples/RateLimiting.md
+			max_attempts = 3
+			num_attempts = 0
+			begin
+				num_attempts += 1
+				friends_cursor = @client.friends(screen_name, {:cursor => cursor, :count => 5000})
+				hash = friends_cursor.to_hash
+				hash[:users].each {|u| list << u[:screen_name] }
+
+				# Recursive step using the next cursor
+				get_twitter_friends_with_cursor(screen_name, hash[:next_cursor], list)
+			rescue Twitter::Error::TooManyRequests => error
+				if num_attempts <= max_attempts
+					# NOTE: Your process could go to sleep for up to 15 minutes but if you
+					# retry any sooner, it will almost certainly fail with the same exception.
+					sleep error.rate_limit.reset_in
+					logger.debug error
+					retry
+				else
+					raise
+				end
+			end
+		end
+	end
+
 	# Helper function to fetch the list of a user's friends from Twitter
 	def fetch_friends(screen_name)
 		if @client.blank?
 			connect_to_twitter
 		end
-		update_tweets(screen_name)
 
-		# Rate limiting technique from Examples
-		# https://github.com/sferik/twitter/blob/master/examples/RateLimiting.md
-		max_attempts = 3
-		num_attempts = 0
-		begin
-			num_attempts += 1
-			# Fails with "Rate limit exceeded" or "execution expired" for users
-			# with more than a couple hundred friends
-			friends = @client.friends(screen_name).to_a
-		rescue Twitter::Error::TooManyRequests => error
-			if num_attempts <= max_attempts
-				# NOTE: Your process could go to sleep for up to 15 minutes but if you
-				# retry any sooner, it will almost certainly fail with the same exception.
-					sleep error.rate_limit.reset_in
-				retry
-			else
-				raise
-			end
-		end
-
-		# Filter out only the screen_name attribute
-		friends_array = friends.collect{|user| user.screen_name}
+		friends_array = get_twitter_friends_with_cursor(screen_name, -1, [])
 		return friends_array
 	end
 end
