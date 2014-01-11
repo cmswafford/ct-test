@@ -34,7 +34,7 @@ class UsersController < ApplicationController
 			config.access_token        = Rails.configuration.twitter_access_token
 			config.access_token_secret = Rails.configuration.twitter_access_token_secret
     end
-		#Twitter::REST::Client.connection_options = {:request => {:timeout => 5, :open_timeout => 2}}
+		#Twitter::RdST::Client.connection_options = {:request => {:timeout => 5, :open_timeout => 2}}
 	end
 
 	# Helper function to get the 20 most recent tweets for a user
