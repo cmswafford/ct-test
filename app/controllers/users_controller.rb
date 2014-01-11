@@ -105,7 +105,7 @@ class UsersController < ApplicationController
 		if @client.blank?
 			connect_to_twitter
 		end
-			update_tweets(screen_name)
+		update_tweets(screen_name)
 
 		# Rate limiting technique from Examples
 		# https://github.com/sferik/twitter/blob/master/examples/RateLimiting.md
