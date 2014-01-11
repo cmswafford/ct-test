@@ -114,6 +114,8 @@ class UsersController < ApplicationController
 		num_attempts = 0
 		begin
 			num_attempts += 1
+			# Fails with "Rate limit exceeded" or "execution expired" for users
+			# with more than a couple hundred friends
 			friends = @client.friends(screen_name).to_a
 		rescue Twitter::Error::TooManyRequests => error
 			if num_attempts <= max_attempts
