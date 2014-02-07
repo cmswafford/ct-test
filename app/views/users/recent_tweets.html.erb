@@ -2,11 +2,12 @@
 
 <% if params[:id] == "0" %>
 	<form action="#" method="get"
-		onsubmit="(function(){
+		onsubmit="
 			username = document.getElementById('twitter-username').value;
+			console.log(username);
 			window.location = '/users/'+username+'/recent-tweets';
 			return false;
-		})();">
+		">
 		<label for="twitter-username">Twitter Username:</label>
 		<input id="twitter-username" type="text" />
 		<input type="submit" value="submit" />
